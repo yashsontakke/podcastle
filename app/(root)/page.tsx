@@ -8,7 +8,7 @@ export default async function page() {
 
   return (
     <section className='flex flex-col  gap-5 p-8 pt-0 w-full'>
-      <h1 className="text-20 font-bold text-white-1">Trending Podcasts</h1>    
+      <h1 className="text-20 font-bold text-white-1">Trending Podcasts</h1>
 
 
       <div className="podcast_grid">
