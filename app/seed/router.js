@@ -1,31 +1,61 @@
-import { db } from "@vercel/postgres";
-import bcrypt from "bcrypt";
-import { users } from "../lib/placeholder-data";
+import { db } from '@vercel/postgres';
 
-const client = await db.connect();
+async function setupDatabase() {
+  const client = await db.connect();
 
-export default async function seedUsers() {
-  await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
-  await client.sql`
-    CREATE TABLE IF NOT EXISTS users (
-      id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-      name VARCHAR(255) NOT NULL,
-      email TEXT NOT NULL UNIQUE,
-      password TEXT NOT NULL
-    );
-  `;
+  try {
+    await client.sql`
+      -- Create the users table
+      CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        email VARCHAR(255) NOT NULL,
+        imageUrl VARCHAR(255) NOT NULL,
+        clerkId VARCHAR(255) NOT NULL,
+        name VARCHAR(255) NOT NULL
+      );
 
+     
 
-  const insertedUsers = await Promise.all(
-    users.map(async (user) => {
-      const hashedPassword = await bcrypt.hash(user.password, 10);
-      return client.sql`
-        INSERT INTO users (id, name, email, password)
-        VALUES (${user.id}, ${user.name}, ${user.email}, ${hashedPassword})
-        ON CONFLICT (id) DO NOTHING;
-      `;
-    })
-  );
+      -- Create the podcasts table
+      CREATE TABLE IF NOT EXISTS podcasts (
+        id SERIAL PRIMARY KEY,
+        userId INTEGER NOT NULL,
+        podcastTitle VARCHAR(255) NOT NULL,
+        podcastDescription TEXT NOT NULL,
+        audioUrl VARCHAR(255),
+        audioStorageId INTEGER,
+        imageUrl VARCHAR(255),
+        imageStorageId INTEGER,
+        author VARCHAR(255) NOT NULL,
+        authorId VARCHAR(255) NOT NULL,
+        authorImageUrl VARCHAR(255) NOT NULL,
+        voicePrompt TEXT NOT NULL,
+        imagePrompt TEXT NOT NULL,
+        voiceType VARCHAR(255) NOT NULL,
+        audioDuration INTEGER NOT NULL,
+        views INTEGER NOT NULL
+      );
 
-  return insertedUsers;
+      -- Create indexes for the search fields
+      CREATE INDEX IF NOT EXISTS search_author ON podcasts (author);
+      CREATE INDEX IF NOT EXISTS search_title ON podcasts (podcastTitle);
+      CREATE INDEX IF NOT EXISTS search_body ON podcasts (podcastDescription);
+    `;
+
+    console.log("Database setup complete.");
+  } catch (err) {
+    console.error("Error setting up the database:", err);
+  } finally {
+    client.release();
+  }
 }
+
+export async function GET(){
+    try {
+        setupDatabase()
+    } catch (error) {
+        onsole.error("Unexpected error:", error)
+    }
+}
+
+
