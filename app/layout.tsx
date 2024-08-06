@@ -3,7 +3,6 @@ import {
 } from '@clerk/nextjs'
 import './globals.css'
 
-console.log("Publishable Key:", process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY);
 
 export default function RootLayout({
   children,
