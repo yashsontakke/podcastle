@@ -1,7 +1,6 @@
 // pages/api/clerk-webhook.ts
-
 import { NextApiRequest, NextApiResponse } from 'next';
-console.log("i am here ")
+import { db } from '@vercel/postgres';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     if (req.method === 'POST') {
@@ -16,16 +15,37 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         }
 
         res.status(200).json({ message: 'Webhook received' });
-    } else {
+    } else {    
         res.setHeader('Allow', ['POST']);
         res.status(405).end(`Method ${req.method} Not Allowed`);
     }
 };
 
 const addUserToDatabase = async (user: any) => {
-    // Logic to add user to your database
-    console.log('Adding user to database:', user);
-    // Example: You can use Prisma, Mongoose, or any other ORM/database client
+    const client = await db.connect();
+    const { id: clerkId , image_url: imageUrl, first_name:name } = user;
+
+    const {
+        email_addresses: [{ id, email_address: email}]
+      } = user;
+      
+      
+    console.log(clerkId,email,imageUrl,name);
+
+    const query = `
+        INSERT INTO users (clerkId, email, imageUrl, name)
+        VALUES ($1, $2, $3, $4)
+        RETURNING id;
+    `;
+
+    try {
+        const result = await client.query(query, [clerkId, email, imageUrl, name]);
+        console.log('User added to database with generated id:', result.rows[0].id);
+    } catch (error) {
+        console.error('Error adding user to database:', error);
+    } finally {
+        client.release();
+    }
 };
 
 export default handler;

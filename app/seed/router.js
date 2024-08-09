@@ -15,7 +15,6 @@ async function setupDatabase() {
       );
 
      
-
       -- Create the podcasts table
       CREATE TABLE IF NOT EXISTS podcasts (
         id SERIAL PRIMARY KEY,
