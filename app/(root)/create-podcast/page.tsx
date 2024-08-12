@@ -131,7 +131,7 @@ export default function ProfileForm() {
                   <Loader size={20} className="animate-spin ml-2" />
                 </>) :
                 (<>
-                  'Submit & Publish Podcast'
+                  Submit & Publish Podcast
 
                 </>)}
               <Button type="submit">Submit</Button>
