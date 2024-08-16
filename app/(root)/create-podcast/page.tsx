@@ -24,6 +24,7 @@ import { Label } from "@/components/ui/label"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
 import { Loader } from "lucide-react";
+import GeneratePodcast from "@/components/ui/GeneratePodcast";
 
 const formSchema = z.object({
   podcastTitle: z.string().min(2, {
@@ -41,10 +42,40 @@ const formSchema = z.object({
 const voiceCategories = ['alloy', 'shimmer', 'nova', 'echo', 'fable', 'onyx'];
 
 export default function ProfileForm() {
+
+  const [voiceType, setVoiceType] = useState('');
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // voiceType: string;
+  // setAudio: Dispatch<SetStateAction<string>>;
+  // audio: string;
+  // setAudioStorageId: Dispatch<SetStateAction<number | null>>;
+  // voicePrompt: string;
+  // setVoicePrompt: Dispatch<SetStateAction<string>>;
+  // setAudioDuration: Dispatch<SetStateAction<number>>;
+
+  const [audioUrl, setAudioUrl] = useState('');
+
+  const [audioStorageId, setAudioStoregeId] = useState<number | null>(null);
+
+  const [voicePrompt, setVoicePrompt] = useState('');
+
+  const [audioDuration, setAudioDuration] = useState(0);
+
+  const [imagePromt, setImagePromt] = useState('');
+
+  const [imageStorageId, setImageStoreid] = useState<string | null>(null);
+
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+
+
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       podcastTitle: "",
+      podcastDescription: ""
     },
   })
 
@@ -52,18 +83,13 @@ export default function ProfileForm() {
   function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    console.log(values)
+
+    setIsSubmitting(true);
+    console.log("handling submit ")
   }
 
 
-  const [voiceType, setVoiceType] = useState<string | null>(null);
-
-  const [submitting, setIsSubmitting] = useState(false);
-
   return (
-
-
-
     <section className="flex flex-col mt-10">
       <h1 className="text-20 font-bold text-white-1">Create Podcast</h1>
 
@@ -124,18 +150,40 @@ export default function ProfileForm() {
               />
 
             </div>
-            <div>
-              {submitting ?
-                (<>
-                  Submitting
-                  <Loader size={20} className="animate-spin ml-2" />
-                </>) :
-                (<>
-                  Submit & Publish Podcast
 
-                </>)}
-              <Button type="submit">Submit</Button>
+            <div>
+              {/* // voiceType: string;
+                  // setAudio: Dispatch<SetStateAction<string>>;
+                  // audio: string;
+                  // setAudioStorageId: Dispatch<SetStateAction<number | null>>;
+                  // voicePrompt: string;
+                  // setVoicePrompt: Dispatch<SetStateAction<string>>;
+                  // setAudioDuration: Dispatch<SetStateAction<number>>; */}
+
+              <GeneratePodcast
+                voiceType={voiceType}
+                setAudio={setAudioUrl}
+                setAudioStorageId={setAudioStoregeId}
+                voicePrompt={voicePrompt}
+                setVoicePrompt={setVoicePrompt}
+                setAudioDuration={setAudioDuration}
+                audio={audioUrl}
+              />
+
+              <div>
+                <Button type="submit" className="text-16 w-full bg-orange-1 py-4 font-extrabold text-white-1 transition-all duration-500 hover:bg-black-1">
+                  {isSubmitting ? (
+                    <>
+                      Submitting
+                      <Loader size={20} className="animate-spin ml-2" />
+                    </>
+                  ) : (
+                    'Submit & Publish Podcast'
+                  )}
+                </Button>
+              </div>
             </div>
+
 
 
 
